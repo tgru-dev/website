@@ -18,7 +18,7 @@
 - No invented claims, metrics, testimonials, job titles, or availability.
 - No emoji in the UI.
 - No gradients, glow, gradient text, colored shadows, or blobs.
-- Palette: paper `#f7f4ee`, card `#fdfbf7`, raised `#efe9df`, ink `#1f1b16`, secondary `#5e554a`, muted `#7b7266`, accent `#1e2a5a`, hairline `rgba(31, 27, 22, 0.08)`.
+- Palette: paper `#f7f4ee`, card `#fdfbf7`, raised `#efe9df`, ink `#1f1b16`, secondary `#5e554a`, muted `#766d60`, accent `#1e2a5a`, hairline `rgba(31, 27, 22, 0.08)`.
 - Fonts: Instrument Sans (interface), Instrument Serif (name and hero), IBM Plex Mono (meta, numbers, stack). Self-hosted WOFF2 only.
 - All spacing values are multiples of 4.
 - No runtime JavaScript, no framework, no build step.
@@ -247,7 +247,7 @@ test('self-hosted font files exist', () => {
 });
 
 test('CSS carries the approved system and safeguards', () => {
-  for (const token of ['#f7f4ee', '#fdfbf7', '#efe9df', '#1f1b16', '#5e554a', '#7b7266', '#1e2a5a']) {
+  for (const token of ['#f7f4ee', '#fdfbf7', '#efe9df', '#1f1b16', '#5e554a', '#766d60', '#1e2a5a']) {
     assert.ok(css.includes(token), `missing token: ${token}`);
   }
   assert.match(css, /@font-face/);
@@ -475,7 +475,7 @@ Define and use these values exactly:
   --raised: #efe9df;
   --ink: #1f1b16;
   --secondary: #5e554a;
-  --muted: #7b7266;
+  --muted: #766d60;
   --accent: #1e2a5a;
   --accent-hover: #16204a;
   --line: rgba(31, 27, 22, 0.08);

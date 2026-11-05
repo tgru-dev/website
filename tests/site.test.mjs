@@ -67,7 +67,7 @@ test('self-hosted font files exist', () => {
 });
 
 test('CSS carries the approved system and safeguards', () => {
-  for (const token of ['#f7f4ee', '#fdfbf7', '#efe9df', '#1f1b16', '#5e554a', '#7b7266', '#1e2a5a']) {
+  for (const token of ['#f7f4ee', '#fdfbf7', '#efe9df', '#1f1b16', '#5e554a', '#766d60', '#1e2a5a']) {
     assert.ok(css.includes(token), `missing token: ${token}`);
   }
   assert.equal((css.match(/@font-face/g) || []).length, 4);
@@ -89,4 +89,36 @@ test('CSS has the layout and motion contract', () => {
   assert.match(css, /\.project\s*\{[^}]*grid-template-columns/s);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(css, /outline:\s*2px solid var\(--accent\)/);
+});
+
+test('text colors meet WCAG AA contrast on their backgrounds', () => {
+  const token = (name) => {
+    const match = css.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6})`, 'i'));
+    assert.ok(match, `missing token: ${name}`);
+    return match[1];
+  };
+  const luminance = (hex) => {
+    const channels = hex
+      .slice(1)
+      .match(/../g)
+      .map((part) => parseInt(part, 16) / 255)
+      .map((value) => (value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  };
+  const contrast = (a, b) => {
+    const [high, low] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (high + 0.05) / (low + 0.05);
+  };
+
+  for (const [foreground, background] of [
+    ['muted', 'paper'],
+    ['muted', 'card'],
+    ['secondary', 'paper'],
+    ['ink', 'paper'],
+    ['accent', 'paper'],
+    ['paper', 'accent'],
+  ]) {
+    const ratio = contrast(token(foreground), token(background));
+    assert.ok(ratio >= 4.5, `${foreground} on ${background}: ${ratio.toFixed(2)}:1`);
+  }
 });

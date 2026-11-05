@@ -80,7 +80,7 @@ Nach dem Unslop-Prozess:
 - Erhabene Fläche: `#efe9df`
 - Primärtext: `#1f1b16`
 - Sekundärtext: `#5e554a`
-- Gedämpft: `#7b7266`
+- Gedämpft: `#766d60`
 - Akzent / Tinte: `#1e2a5a`
 - Haarlinie: Primärtext bei 8 %
 
