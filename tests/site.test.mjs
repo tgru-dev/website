@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = new URL('../', import.meta.url);
 const html = readFileSync(new URL('index.html', root), 'utf8');
+const css = readFileSync(new URL('style.css', root), 'utf8');
 
 test('document language, title, and description', () => {
   assert.match(html, /<html lang="de">/);
@@ -55,4 +56,37 @@ test('local assets and links exist', () => {
   for (const path of paths) {
     assert.ok(existsSync(fileURLToPath(new URL(path, root))), `missing local asset: ${path}`);
   }
+});
+
+test('self-hosted font files exist', () => {
+  const urls = [...css.matchAll(/url\("([^"]+)"\)/g)].map((match) => match[1]);
+  assert.equal(urls.length, 4, 'expected four font URLs');
+  for (const path of urls) {
+    assert.ok(existsSync(fileURLToPath(new URL(path, root))), `missing font: ${path}`);
+  }
+});
+
+test('CSS carries the approved system and safeguards', () => {
+  for (const token of ['#f7f4ee', '#fdfbf7', '#efe9df', '#1f1b16', '#5e554a', '#7b7266', '#1e2a5a']) {
+    assert.ok(css.includes(token), `missing token: ${token}`);
+  }
+  assert.equal((css.match(/@font-face/g) || []).length, 4);
+  assert.equal((css.match(/font-display: swap/g) || []).length, 4);
+  assert.match(css, /prefers-reduced-motion/);
+  assert.match(css, /:focus-visible/);
+  assert.match(css, /@media \(max-width: 900px\)/);
+  assert.match(css, /@media \(max-width: 720px\)/);
+  assert.match(css, /@media \(max-width: 420px\)/);
+  assert.doesNotMatch(css, /linear-gradient|radial-gradient|text-shadow|transition:\s*all/i);
+  assert.doesNotMatch(css, /#8845f4/i);
+  assert.doesNotMatch(css, /position:\s*fixed/i);
+});
+
+test('CSS has the layout and motion contract', () => {
+  assert.match(css, /\.hero\s*\{[^}]*grid-template-columns/s);
+  assert.match(css, /\.profile-card\s*\{[^}]*animation:/s);
+  assert.match(css, /@keyframes rise/);
+  assert.match(css, /\.project\s*\{[^}]*grid-template-columns/s);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(css, /outline:\s*2px solid var\(--accent\)/);
 });
